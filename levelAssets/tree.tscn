@@ -1,0 +1,143 @@
+[gd_scene load_steps=18 format=3 uid="uid://bklg6upvtajav"]
+
+[ext_resource type="Texture2D" uid="uid://b30aicai77lee" path="res://levelAssets/animated/tree1a.png" id="1_awjbk"]
+[ext_resource type="Script" path="res://scripts/tree.gd" id="1_nnk0q"]
+[ext_resource type="Script" path="res://levelAssets/HitBox.gd" id="3_me061"]
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_q4tl6"]
+particle_flag_disable_z = true
+emission_shape = 1
+emission_sphere_radius = 20.0
+direction = Vector3(0, 0, 0)
+spread = 20.0
+initial_velocity_min = 50.0
+initial_velocity_max = 100.0
+gravity = Vector3(0, 98, 0)
+scale_max = 2.0
+color = Color(0.423529, 0.588235, 0.423529, 1)
+turbulence_enabled = true
+turbulence_noise_strength = 0.5
+turbulence_noise_scale = 1.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_sra47"]
+atlas = ExtResource("1_awjbk")
+region = Rect2(0, 0, 64, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ujvyt"]
+atlas = ExtResource("1_awjbk")
+region = Rect2(64, 0, 64, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_a6byf"]
+atlas = ExtResource("1_awjbk")
+region = Rect2(128, 0, 64, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_11k2x"]
+atlas = ExtResource("1_awjbk")
+region = Rect2(192, 0, 64, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5nqc2"]
+atlas = ExtResource("1_awjbk")
+region = Rect2(256, 0, 64, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_br0ng"]
+atlas = ExtResource("1_awjbk")
+region = Rect2(320, 0, 64, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1b2lp"]
+atlas = ExtResource("1_awjbk")
+region = Rect2(384, 0, 64, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_r7ia7"]
+atlas = ExtResource("1_awjbk")
+region = Rect2(448, 0, 64, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6isb1"]
+atlas = ExtResource("1_awjbk")
+region = Rect2(512, 0, 64, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kc854"]
+atlas = ExtResource("1_awjbk")
+region = Rect2(576, 0, 64, 96)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_acf7k"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_sra47")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ujvyt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_a6byf")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_11k2x")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5nqc2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_br0ng")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1b2lp")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_r7ia7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6isb1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kc854")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_3fnnk"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_s5iiv"]
+radius = 8.0
+height = 40.0
+
+[node name="Tree" type="Node2D"]
+y_sort_enabled = true
+script = ExtResource("1_nnk0q")
+
+[node name="TreeDamageEffect" type="GPUParticles2D" parent="."]
+z_as_relative = false
+position = Vector2(0, -60)
+emitting = false
+amount = 25
+process_material = SubResource("ParticleProcessMaterial_q4tl6")
+lifetime = 1.5
+one_shot = true
+explosiveness = 0.5
+randomness = 0.2
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(1, -31)
+sprite_frames = SubResource("SpriteFrames_acf7k")
+animation = &"idle"
+frame_progress = 0.26954
+offset = Vector2(0, -10)
+
+[node name="TreeBody" type="StaticBody2D" parent="."]
+position = Vector2(0, -13)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TreeBody"]
+position = Vector2(0, 11)
+shape = SubResource("CircleShape2D_3fnnk")
+
+[node name="HitBox" type="Area2D" parent="." groups=["targetable"]]
+monitoring = false
+script = ExtResource("3_me061")
+
+[node name="HitBoxArea" type="CollisionShape2D" parent="HitBox"]
+position = Vector2(0, -15)
+shape = SubResource("CapsuleShape2D_s5iiv")
+
+[connection signal="take_damage_signal" from="HitBox" to="." method="_on_hit_box_take_damage_signal"]

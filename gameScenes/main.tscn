@@ -1,0 +1,116 @@
+[gd_scene load_steps=13 format=3 uid="uid://wtg00i02kakc"]
+
+[ext_resource type="Script" path="res://scripts/main.gd" id="1_neme6"]
+[ext_resource type="PackedScene" uid="uid://b1dksumpka7uu" path="res://parallaxBackgrounds/desert_hills.tscn" id="3_ys3hv"]
+[ext_resource type="Script" path="res://scripts/StartButton.gd" id="6_klu7g"]
+[ext_resource type="Script" path="res://gameScenes/SceneTransition.gd" id="7_21pkd"]
+[ext_resource type="Script" path="res://scripts/hazeEffect.gd" id="13_ajdrr"]
+[ext_resource type="FontFile" uid="uid://btnvv0d2j4wlt" path="res://joystix monospace.otf" id="14_xf2y6"]
+[ext_resource type="AudioStream" uid="uid://dxxl527n02aiw" path="res://WindBackground.wav" id="15_1nbn5"]
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_ywm1q"]
+lifetime_randomness = 0.25
+particle_flag_disable_z = true
+emission_shape = 3
+emission_box_extents = Vector3(1152, 10, 1)
+direction = Vector3(1, 1, 0)
+spread = 10.0
+gravity = Vector3(48, 98, 0)
+scale_max = 2.0
+turbulence_enabled = true
+turbulence_noise_scale = 4.0
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_knc68"]
+seed = 4
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_24cux"]
+noise = SubResource("FastNoiseLite_knc68")
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_5kukm"]
+diffuse_texture = SubResource("NoiseTexture2D_24cux")
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_eqneu"]
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_neme6")
+
+[node name="SnowRain" type="GPUParticles2D" parent="."]
+position = Vector2(576, 0)
+amount = 750
+process_material = SubResource("ParticleProcessMaterial_ywm1q")
+lifetime = 22.0
+preprocess = 22.0
+randomness = 0.4
+visibility_rect = Rect2(-600, 0, 1200, 600)
+
+[node name="HazeEffect" type="TextureRect" parent="."]
+modulate = Color(0.486275, 0.223529, 0.372549, 0.184314)
+offset_right = 1160.0
+offset_bottom = 657.0
+texture = SubResource("CanvasTexture_5kukm")
+script = ExtResource("13_ajdrr")
+speed = 5
+
+[node name="HazeEffect2" type="TextureRect" parent="."]
+modulate = Color(0.623529, 0.223529, 0.541176, 0.0117647)
+offset_right = 1160.0
+offset_bottom = 657.0
+texture = SubResource("CanvasTexture_5kukm")
+script = ExtResource("13_ajdrr")
+speed = 10
+
+[node name="DesertHills" parent="." instance=ExtResource("3_ys3hv")]
+
+[node name="Title" type="RichTextLabel" parent="."]
+texture_filter = 1
+offset_left = 211.0
+offset_top = 266.0
+offset_right = 945.0
+offset_bottom = 310.0
+size_flags_horizontal = 0
+theme_override_colors/default_color = Color(1, 1, 1, 1)
+theme_override_fonts/normal_font = ExtResource("14_xf2y6")
+theme_override_font_sizes/normal_font_size = 32
+text = "As Snow Falls On Desert Sky"
+scroll_active = false
+
+[node name="WindBackground" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("15_1nbn5")
+volume_db = -2.971
+pitch_scale = 0.92
+autoplay = true
+attenuation = 1.46409
+
+[node name="EnterText" type="RichTextLabel" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 459.0
+offset_top = 447.0
+offset_right = 698.0
+offset_bottom = 477.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(119, 15)
+theme_override_fonts/normal_font = ExtResource("14_xf2y6")
+theme_override_font_sizes/normal_font_size = 20
+text = "Enter to Start"
+script = ExtResource("6_klu7g")
+
+[node name="SceneTransitionOut" type="TextureRect" parent="."]
+modulate = Color(1, 1, 1, 0)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -0.5
+offset_top = -0.5
+offset_right = 1199.5
+offset_bottom = 899.5
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("CanvasTexture_eqneu")
+script = ExtResource("7_21pkd")
+
+[connection signal="scene_out" from="." to="SceneTransitionOut" method="_on_main_scene_out"]
