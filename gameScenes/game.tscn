@@ -1,4 +1,4 @@
-[gd_scene load_steps=88 format=3 uid="uid://djm3ovu05y65u"]
+[gd_scene load_steps=96 format=3 uid="uid://djm3ovu05y65u"]
 
 [ext_resource type="Texture2D" uid="uid://cssn0ccq41irv" path="res://levelAssets/MainLev2.0.png" id="1_1cdul"]
 [ext_resource type="Script" path="res://scripts/game.gd" id="1_43iux"]
@@ -58,7 +58,10 @@
 [ext_resource type="Texture2D" uid="uid://dpedo3iybve85" path="res://ui/PlayerStats/HpFlask/ShatterFX/ShatterFX6.png" id="31_acrqw"]
 [ext_resource type="Texture2D" uid="uid://bvixhi8w7a88j" path="res://ui/PlayerStats/HpFlask/ShatterFX/ShatterFX7.png" id="32_vw5q4"]
 [ext_resource type="AudioStream" uid="uid://1bafd6icauox" path="res://gameScenes/deathworldambience.wav" id="46_rd6pl"]
+[ext_resource type="Texture2D" uid="uid://b2n2l54v6ussv" path="res://ui/PlayerStats/ManaBar.png" id="47_aepc7"]
+[ext_resource type="AudioStream" uid="uid://dahtypjtog784" path="res://gameMusic.wav" id="51_8mcll"]
 [ext_resource type="Script" path="res://scripts/PlayerDeathScene.gd" id="57_lm7g8"]
+[ext_resource type="PackedScene" uid="uid://bx5fvt7kxehix" path="res://enemies/kobold/kobold.tscn" id="62_2hsvw"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_skwwa"]
 seed = 4
@@ -128,6 +131,28 @@ animations = [{
 "speed": 5.0
 }]
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_ktfks"]
+atlas = ExtResource("47_aepc7")
+region = Rect2(83.3235, 38.2024, 39.1879, 4.59444)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2v58y"]
+atlas = ExtResource("47_aepc7")
+region = Rect2(36.2981, 14.2843, 38.5122, 3.37826)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7wcv7"]
+atlas = ExtResource("47_aepc7")
+region = Rect2(82.43, 11.7564, 42.3657, 8.51322)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dajkn"]
+atlas = ExtResource("47_aepc7")
+region = Rect2(3.86679, 15.2302, 16.2157, 10.9456)
+
+[sub_resource type="LabelSettings" id="LabelSettings_jvc8e"]
+font = ExtResource("15_iaoug")
+font_color = Color(0, 0.764706, 1, 1)
+outline_size = 6
+outline_color = Color(0, 0, 0, 1)
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_ymwc2"]
 atlas = ExtResource("4_mvw2m")
 region = Rect2(32.0458, 32.7526, 15.2062, 14.3887)
@@ -149,7 +174,8 @@ atlas = ExtResource("4_mvw2m")
 region = Rect2(7.23404, 104.972, 51.4396, 18.1075)
 
 [sub_resource type="LabelSettings" id="LabelSettings_4xjnd"]
-outline_size = 5
+font_color = Color(0.8, 0.105882, 0.12549, 1)
+outline_size = 6
 outline_color = Color(0, 0, 0, 1)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_j8t25"]
@@ -9380,7 +9406,7 @@ size = Vector2(27.75, 837.5)
 script = ExtResource("1_43iux")
 
 [node name="HazeEffect" type="TextureRect" parent="."]
-modulate = Color(0.486275, 0.223529, 0.372549, 0.184314)
+modulate = Color(0.486275, 0.223529, 0.372549, 0.054902)
 top_level = true
 z_index = 2
 offset_right = 1343.0
@@ -9427,6 +9453,55 @@ position = Vector2(25, 25)
 sprite_frames = SubResource("SpriteFrames_7nvyt")
 autoplay = "default"
 
+[node name="StaminaBarBackground" type="TextureRect" parent="GUICanvas/GUI"]
+layout_mode = 0
+offset_left = 49.0
+offset_top = 8.0
+offset_right = 89.0
+offset_bottom = 52.0
+texture = SubResource("AtlasTexture_ktfks")
+stretch_mode = 5
+
+[node name="StaminaProgressBar" type="TextureProgressBar" parent="GUICanvas/GUI"]
+layout_mode = 0
+offset_left = 48.0
+offset_top = 26.0
+offset_right = 88.0
+offset_bottom = 32.0
+value = 100.0
+nine_patch_stretch = true
+texture_progress = SubResource("AtlasTexture_2v58y")
+
+[node name="StaminaBarOutline" type="TextureRect" parent="GUICanvas/GUI"]
+layout_mode = 0
+offset_left = 47.0
+offset_top = 9.0
+offset_right = 90.0
+offset_bottom = 49.0
+texture = SubResource("AtlasTexture_7wcv7")
+stretch_mode = 5
+
+[node name="StaminaBarDecoration" type="TextureRect" parent="GUICanvas/GUI"]
+layout_mode = 0
+offset_left = 80.8
+offset_top = 21.2
+offset_right = 100.8
+offset_bottom = 44.2
+texture = SubResource("AtlasTexture_dajkn")
+stretch_mode = 5
+
+[node name="StaminaLabel" type="Label" parent="GUICanvas/GUI"]
+layout_mode = 0
+offset_left = 54.6
+offset_top = 33.0
+offset_right = 147.6
+offset_bottom = 59.0
+scale = Vector2(0.3, 0.3)
+theme_override_fonts/font = ExtResource("15_iaoug")
+text = "0/100"
+label_settings = SubResource("LabelSettings_jvc8e")
+horizontal_alignment = 2
+
 [node name="Hearts" type="TextureRect" parent="GUICanvas/GUI"]
 layout_mode = 0
 offset_left = 34.4
@@ -9438,10 +9513,10 @@ stretch_mode = 5
 
 [node name="HealthBarBackgroundBack" type="TextureRect" parent="GUICanvas/GUI"]
 layout_mode = 0
-offset_left = 49.6
-offset_top = -2.8
-offset_right = 97.6
-offset_bottom = 37.2
+offset_left = 49.0
+offset_top = -5.0
+offset_right = 98.0
+offset_bottom = 38.0
 texture = SubResource("AtlasTexture_vdnio")
 stretch_mode = 5
 
@@ -9451,36 +9526,36 @@ offset_left = 51.0
 offset_top = 11.0
 offset_right = 96.0
 offset_bottom = 23.0
-value = 100.0
+value = 50.0
 nine_patch_stretch = true
 texture_progress = SubResource("AtlasTexture_hhtjy")
 
 [node name="HealthProgressBar" type="TextureProgressBar" parent="GUICanvas/GUI"]
 layout_mode = 0
-offset_left = 50.0
-offset_top = 10.0
-offset_right = 97.0
-offset_bottom = 24.0
+offset_left = 49.4
+offset_top = 9.6
+offset_right = 97.4
+offset_bottom = 23.6
 value = 100.0
 nine_patch_stretch = true
 texture_progress = SubResource("AtlasTexture_igmqj")
 
 [node name="HealthBarBackground" type="TextureRect" parent="GUICanvas/GUI"]
 layout_mode = 0
-offset_left = 48.2
+offset_left = 48.0
 offset_top = -2.0
-offset_right = 99.2
+offset_right = 99.0
 offset_bottom = 36.0
 texture = SubResource("AtlasTexture_4xhd3")
 stretch_mode = 5
 
 [node name="HealthLabel" type="Label" parent="GUICanvas/GUI"]
 layout_mode = 0
-offset_left = 52.4
-offset_top = 0.4
-offset_right = 123.4
-offset_bottom = 21.4
-scale = Vector2(0.5, 0.5)
+offset_left = 48.4
+offset_top = 2.4
+offset_right = 119.4
+offset_bottom = 23.4
+scale = Vector2(0.3, 0.3)
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("15_iaoug")
@@ -9497,7 +9572,6 @@ script = ExtResource("28_peg24")
 
 [node name="HealthBarBreakEffect" type="AnimatedSprite2D" parent="GUICanvas/GUI"]
 position = Vector2(73.6, 16.8)
-scale = Vector2(1, 1)
 sprite_frames = SubResource("SpriteFrames_8wrjl")
 autoplay = "default"
 
@@ -9513,9 +9587,14 @@ volume_db = -0.693
 
 [node name="WindBackground" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("4_w4ndw")
-volume_db = -2.971
+volume_db = -12.0
 pitch_scale = 0.92
 script = ExtResource("2_wcpp4")
+
+[node name="GameMusic" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("51_8mcll")
+volume_db = -5.0
+autoplay = true
 
 [node name="SnowRain" type="GPUParticles2D" parent="."]
 top_level = true
@@ -9606,6 +9685,9 @@ position = Vector2(985, 201)
 
 [node name="TreeVariant7" parent="YSort" instance=ExtResource("9_n4uis")]
 position = Vector2(1241, 72)
+
+[node name="Kobold" parent="YSort" instance=ExtResource("62_2hsvw")]
+position = Vector2(598, 247)
 
 [node name="PlayerCamera" type="Camera2D" parent="."]
 position = Vector2(547, 462)

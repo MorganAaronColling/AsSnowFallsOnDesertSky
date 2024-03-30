@@ -8,7 +8,7 @@ func _ready():
 func _process(delta):
 	pass
 	
-	
 func player_death():
+	$GameMusic.stop()
 	$WindBackground.stop()
 	$DeathAmbience.play()

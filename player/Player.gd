@@ -4,7 +4,9 @@ var speed: float = 200
 var acceleration: float = 2000
 var friction: float = acceleration / speed
 var health: int
-var max_health: int = 50
+var max_health: int = 100
+var stamina: int
+var max_stamina: int = 100
 
 var normal_friction = acceleration / speed
 var high_friction = 5
@@ -21,6 +23,8 @@ var hurting = false
 var dead = false
 
 var basic_attack_damage = 10
+var basic_attack_stamina = 20
+var heavy_attack_stamina = 30
 var water_tiles_list = [Vector2i(20, 12), Vector2i(20, 13), Vector2i(20, 14), Vector2i(21, 12), Vector2i(21, 13), Vector2i(21, 14), Vector2i(22, 12), Vector2i(22, 13), Vector2i(22, 14)]
 
 @onready var tilemap: TileMap = get_node('../../World')
@@ -36,7 +40,8 @@ var water_tiles_list = [Vector2i(20, 12), Vector2i(20, 13), Vector2i(20, 14), Ve
 @onready var game: Node2D = get_node("/root/game")
 @onready var playerHealthLabel: Label = get_node('../../GUICanvas/GUI/HealthLabel')
 @onready var playerHealthBarBackground: TextureProgressBar = get_node('../../GUICanvas/GUI/HealthProgressBarBackground')
-
+@onready var playerStaminaBar: TextureProgressBar = get_node('../../GUICanvas/GUI/StaminaProgressBar')
+@onready var playerStaminaLabel: Label = get_node('../../GUICanvas/GUI/StaminaLabel')
 
 func _ready():
 	health = max_health
@@ -45,6 +50,11 @@ func _ready():
 	healthBarProgress.value = health
 	playerHealthBarBackground.value = health
 	playerHealthLabel.text = str(health) + '/' + str(max_health)
+	
+	stamina = max_stamina
+	playerStaminaLabel.text = str(stamina) + '/' + str(max_stamina)
+	playerStaminaBar.max_value = max_stamina
+	playerStaminaBar.value = stamina
 
 func _process(delta: float) -> void:
 	if !dead:
@@ -144,8 +154,13 @@ func input_controller() -> void:
 			$Footstep.stop()
 			$WaterSplashAudio.stop()
 			if sword_drawn:
-				attacking = true
-				$AnimatedSprite2D.play('attackBasic')
+				if stamina >= basic_attack_stamina:
+					attacking = true
+					$AnimatedSprite2D.play('attackBasic')
+					update_stamina(-basic_attack_stamina)
+				else:
+					acceleration = normal_acceleration
+					friction = normal_friction
 			else: 
 				sword_drawn = true
 				sword_drawing = true
@@ -156,8 +171,13 @@ func input_controller() -> void:
 			$Footstep.stop()
 			$WaterSplashAudio.stop()
 			if sword_drawn:
-				attacking = true
-				$AnimatedSprite2D.play('attackHeavy')
+				if stamina >= heavy_attack_stamina:
+					attacking = true
+					$AnimatedSprite2D.play('attackHeavy')
+					update_stamina(-heavy_attack_stamina)
+				else:
+					acceleration = normal_acceleration
+					friction = normal_friction
 			else: 
 				sword_drawn = true
 				sword_drawing = true
@@ -191,8 +211,7 @@ func deal_damage():
 			$AttackAreaPivot/BasicAttackArea.monitoring = false
 			$AttackAreaPivot/SecondaryAttackArea.monitoring = false
 			$AttackAreaPivot/SpinAttackArea.monitoring = false
-			
-			
+				
 func _on_animated_sprite_2d_animation_finished():
 	if $AnimatedSprite2D.animation == 'holsterSword' or $AnimatedSprite2D.animation == 'drawSword':
 		sword_drawing = false
@@ -206,7 +225,6 @@ func _on_animated_sprite_2d_animation_finished():
 		hurting = false
 		acceleration = normal_acceleration
 		friction = normal_friction
-		
 		
 func _on_basic_attack_area_area_entered(area):
 	if area.is_in_group('targetable'):
@@ -263,13 +281,8 @@ func player_hit(damage):
 		attacking = false
 		sliding = false
 		sword_drawing = false
-		health -= damage
-		healthBarProgress.value = health
-		playerHealthLabel.text = str(health) + '/' + str(max_health)
-		var tween = create_tween()
-		tween.tween_property(playerHealthBarBackground, "value", health, 0.6)
+		update_health(-damage)
 
-		
 func player_hurt():
 	playerPortraitBlood.play('damage')
 	$AnimatedSprite2D.play('hurt')
@@ -277,4 +290,23 @@ func player_hurt():
 	$Footstep.stop()
 	$WaterSplashAudio.stop()
 	
+func update_stamina(change_in_stamina):
+	stamina += change_in_stamina
+	playerStaminaLabel.text = str(stamina) + '/' + str(max_stamina)
+	var tween = create_tween()
+	tween.tween_property(playerStaminaBar, "value", stamina, 0.3)
+
+func update_health(change_in_health):
+	health += change_in_health
+	playerHealthLabel.text = str(health) + '/' + str(max_health)
+	var tween = create_tween()
+	tween.tween_property(playerHealthBarBackground, "value", health, 0.1)
+	tween.tween_property(healthBarProgress, "value", health, 0.3)
 	
+func _on_passive_stamina_regen_timeout():
+	if stamina < max_stamina && !dead:
+		update_stamina(1)
+
+func _on_passive_health_regen_timeout():
+	if health < max_health && !dead:
+		update_health(1)
