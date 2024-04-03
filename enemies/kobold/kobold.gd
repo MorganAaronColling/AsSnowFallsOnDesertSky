@@ -2,15 +2,20 @@ extends "../EnemyBaseClass.gd"
 
 func update_paths():
 	animationPlayer = $SpritePivot/AnimatedSprite2D
-	speed = 60
-	attack_damage = 50
+	base_speed = 60
+	attack_damage = 20
+	base_acceleration = 120
 	health = 30
+	attack_offset = 35
+	base_friction = base_acceleration / base_speed
 
 func set_facing_direction() -> void:
-	if velocity.x > 0:
+	if player.global_position.x > global_position.x:
+		facing_Left = true
 		$SpritePivot.scale.x = -1
 		attackAreaPivot.scale.x = -1
-	elif velocity.x < 0:
+	elif player.global_position.x < global_position.x:
+		facing_Left = false
 		$SpritePivot.scale.x = 1
 		attackAreaPivot.scale.x = 1
 
@@ -40,4 +45,10 @@ func deal_damage():
 		else:
 			pass
 	
+func _on_animated_sprite_2d_animation_changed():
+	if animationPlayer:
+		$SpritePivot/AnimatedSprite2DShadow.play(animationPlayer.animation)
 
+
+func _on_death_timer_timeout():
+	on_death_timer_timeout_signal_received()

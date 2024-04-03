@@ -220,7 +220,7 @@ height = 24.0
 radius = 61.3514
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_ca1dw"]
-radius = 12.0
+radius = 8.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_rlbus"]
 radius = 9.0
@@ -247,17 +247,32 @@ position = Vector2(0, -6)
 collision_layer = 2
 collision_mask = 2
 motion_mode = 1
+wall_min_slide_angle = 0.0
 script = ExtResource("1_dfg0u")
+
+[node name="RayCast2D" type="RayCast2D" parent="."]
+target_position = Vector2(0, 0)
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(1, 0)
 scale = Vector2(0.5, 0.5)
 sprite_frames = SubResource("SpriteFrames_rhun5")
-animation = &"run"
+animation = &"sleep"
+autoplay = "sleep"
+offset = Vector2(0, 10)
+
+[node name="AnimatedSprite2DShadow" type="AnimatedSprite2D" parent="."]
+modulate = Color(0, 0, 0, 0.372549)
+position = Vector2(9, 26)
+scale = Vector2(0.55, -0.55)
+skew = -0.363028
+sprite_frames = SubResource("SpriteFrames_rhun5")
+animation = &"sleep"
 autoplay = "sleep"
 offset = Vector2(0, 10)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+visible = false
 position = Vector2(0, 11)
 rotation = 1.5708
 shape = SubResource("CapsuleShape2D_6nxbp")
@@ -268,6 +283,7 @@ shape = SubResource("CapsuleShape2D_6nxbp")
 monitorable = false
 
 [node name="AttackRadiusShape" type="CollisionShape2D" parent="AttackRadiusTimer"]
+visible = false
 shape = SubResource("CircleShape2D_fuqg7")
 
 [node name="AttackAreaPivot" type="Node2D" parent="."]
@@ -277,7 +293,8 @@ monitoring = false
 monitorable = false
 
 [node name="AttackArea" type="CollisionShape2D" parent="AttackAreaPivot/AttackArea"]
-position = Vector2(-14, 6)
+visible = false
+position = Vector2(-15, 4)
 shape = SubResource("CircleShape2D_ca1dw")
 
 [node name="Hitbox" type="Area2D" parent="." groups=["targetable"]]
@@ -285,6 +302,7 @@ monitoring = false
 script = ExtResource("7_gte5k")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
+visible = false
 position = Vector2(3, 6)
 rotation = 1.5708
 shape = SubResource("CapsuleShape2D_rlbus")
@@ -299,8 +317,13 @@ texture = ExtResource("8_j15xx")
 lifetime = 2.0
 speed_scale = 0.8
 
+[node name="DeathTimer" type="Timer" parent="."]
+
+[connection signal="animation_changed" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_changed"]
 [connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]
+[connection signal="animation_finished" from="AnimatedSprite2DShadow" to="." method="_on_animated_sprite_2d_animation_finished"]
 [connection signal="timeout" from="AttackTimer" to="." method="_on_attack_timer_timeout"]
 [connection signal="area_entered" from="AttackRadiusTimer" to="." method="_on_attack_radius_timer_area_entered"]
 [connection signal="area_entered" from="AttackAreaPivot/AttackArea" to="." method="_on_attack_area_area_entered"]
 [connection signal="take_damage_signal" from="Hitbox" to="." method="_on_hitbox_take_damage_signal"]
+[connection signal="timeout" from="DeathTimer" to="." method="_on_death_timer_timeout"]

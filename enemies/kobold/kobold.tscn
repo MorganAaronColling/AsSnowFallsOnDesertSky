@@ -212,14 +212,14 @@ animations = [{
 }]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_1rqos"]
-radius = 58.0
+radius = 159.003
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_rtf31"]
-radius = 24.5153
+radius = 8.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_u38nq"]
-radius = 14.0
-height = 44.0
+radius = 8.0
+height = 26.0
 
 [sub_resource type="Curve" id="Curve_qc0eg"]
 max_value = 3.0
@@ -238,52 +238,73 @@ scale_max = 0.05
 scale_curve = SubResource("CurveTexture_4nkpr")
 
 [node name="Kobold" type="CharacterBody2D"]
+position = Vector2(0, -1)
 motion_mode = 1
+wall_min_slide_angle = 0.0
 script = ExtResource("1_gryvg")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, -1)
+visible = false
+position = Vector2(0, 6)
 shape = SubResource("CircleShape2D_j5b1o")
 
 [node name="SpritePivot" type="Node2D" parent="."]
+position = Vector2(0, 7)
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="SpritePivot"]
 position = Vector2(-12, -15)
 sprite_frames = SubResource("SpriteFrames_q2oxh")
-animation = &"attack"
+animation = &"idle"
 autoplay = "idle"
-frame = 4
-frame_progress = 1.0
+
+[node name="AnimatedSprite2DShadow" type="AnimatedSprite2D" parent="SpritePivot"]
+modulate = Color(0, 0, 0, 0.372549)
+position = Vector2(-6, 16)
+scale = Vector2(1.1, -1.1)
+skew = -0.363028
+sprite_frames = SubResource("SpriteFrames_q2oxh")
+animation = &"idle"
+autoplay = "idle"
 
 [node name="AttackTimer" type="Timer" parent="."]
 
+[node name="DeathTimer" type="Timer" parent="."]
+wait_time = 5.0
+one_shot = true
+
 [node name="AttackRadiusTimer" type="Area2D" parent="."]
+position = Vector2(0, 7)
 monitorable = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AttackRadiusTimer"]
+visible = false
 shape = SubResource("CircleShape2D_1rqos")
 
 [node name="AttackAreaPivot" type="Node2D" parent="."]
+position = Vector2(0, 7)
 
 [node name="AttackArea" type="Area2D" parent="AttackAreaPivot"]
 monitoring = false
 monitorable = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AttackAreaPivot/AttackArea"]
-position = Vector2(-20, -10)
+visible = false
+position = Vector2(-36, -12)
 shape = SubResource("CircleShape2D_rtf31")
 
 [node name="Hitbox" type="Area2D" parent="." groups=["targetable"]]
+position = Vector2(0, 7)
 monitoring = false
 script = ExtResource("3_5l186")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
-position = Vector2(0, -14)
+visible = false
+position = Vector2(0, -12)
 shape = SubResource("CapsuleShape2D_u38nq")
 
 [node name="IdleParticles" type="GPUParticles2D" parent="."]
 texture_filter = 2
-position = Vector2(-4, -30)
+position = Vector2(-4, -23)
 amount = 3
 amount_ratio = 0.9
 process_material = SubResource("ParticleProcessMaterial_jiovo")
@@ -291,8 +312,18 @@ texture = ExtResource("3_8j4ll")
 lifetime = 2.0
 speed_scale = 0.8
 
+[node name="RayCast2D" type="RayCast2D" parent="."]
+target_position = Vector2(0, 0)
+
+[node name="Line2D" type="Line2D" parent="."]
+points = PackedVector2Array(0, 0, 0, 0)
+width = 2.0
+
+[connection signal="animation_changed" from="SpritePivot/AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_changed"]
 [connection signal="animation_finished" from="SpritePivot/AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]
+[connection signal="animation_finished" from="SpritePivot/AnimatedSprite2DShadow" to="." method="_on_animated_sprite_2d_animation_finished"]
 [connection signal="timeout" from="AttackTimer" to="." method="_on_attack_timer_timeout"]
+[connection signal="timeout" from="DeathTimer" to="." method="_on_death_timer_timeout"]
 [connection signal="area_entered" from="AttackRadiusTimer" to="." method="_on_attack_radius_timer_area_entered"]
 [connection signal="area_entered" from="AttackAreaPivot/AttackArea" to="." method="_on_attack_area_area_entered"]
 [connection signal="take_damage_signal" from="Hitbox" to="." method="_on_hitbox_take_damage_signal"]

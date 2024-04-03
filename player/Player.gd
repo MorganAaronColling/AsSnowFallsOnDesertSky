@@ -23,8 +23,8 @@ var hurting = false
 var dead = false
 
 var basic_attack_damage = 10
-var basic_attack_stamina = 20
-var heavy_attack_stamina = 30
+var basic_attack_stamina = 10
+var heavy_attack_stamina = 15
 var water_tiles_list = [Vector2i(20, 12), Vector2i(20, 13), Vector2i(20, 14), Vector2i(21, 12), Vector2i(21, 13), Vector2i(21, 14), Vector2i(22, 12), Vector2i(22, 13), Vector2i(22, 14)]
 
 @onready var tilemap: TileMap = get_node('../../World')
@@ -59,8 +59,8 @@ func _ready():
 func _process(delta: float) -> void:
 	if !dead:
 		apply_traction(delta)
-		apply_friction(delta)
 		input_controller()
+	apply_friction(delta)
 
 func _physics_process(delt: float) -> void:
 	move_and_slide()
@@ -80,7 +80,7 @@ func state_management():
 		var tileType = tilemap.get_cell_atlas_coords(0, tileBelow)
 		if water_tiles_list.has(tileType):
 			$WaterSplash.emitting = true
-		if velocity.length() < 18:
+		if velocity.length() < 22:
 			finish_slide()
 	elif sword_drawing:
 		pass
@@ -124,9 +124,11 @@ func set_facing_direction() -> void:
 	if velocity.x > 0:
 		$AnimatedSprite2D.flip_h = false
 		$AttackAreaPivot.scale.x = 1
+		$AnimatedSprite2DShadow.scale.x = 1.1
 	elif velocity.x < 0:
 		$AnimatedSprite2D.flip_h = true
 		$AttackAreaPivot.scale.x = -1
+		$AnimatedSprite2DShadow.scale.x = -1.1
 		
 func start_slide() -> void:
 	$AnimatedSprite2D.play('slide')
@@ -250,6 +252,8 @@ func _on_player_hitbox_player_take_damage(damage):
 func _on_animated_sprite_2d_animation_changed():
 	if playerPortrait:
 		playerPortrait.play($AnimatedSprite2D.animation)
+	if $AnimatedSprite2DShadow:
+		$AnimatedSprite2DShadow.play($AnimatedSprite2D.animation)
 		
 func screen_shake_on_hit():
 	var tween = create_tween()
@@ -284,8 +288,8 @@ func player_hit(damage):
 		update_health(-damage)
 
 func player_hurt():
-	playerPortraitBlood.play('damage')
 	$AnimatedSprite2D.play('hurt')
+	playerPortraitBlood.play('damage')
 	$HurtSound.play()
 	$Footstep.stop()
 	$WaterSplashAudio.stop()

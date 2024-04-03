@@ -14,3 +14,10 @@ func _on_attack_radius_timer_area_entered(area):
 
 func _on_attack_timer_timeout():
 	on_attack_timer_timeout_signal_received()
+
+func _on_animated_sprite_2d_animation_changed():
+	if animationPlayer:
+		$AnimatedSprite2DShadow.play(animationPlayer.animation)
+
+func _on_death_timer_timeout():
+	on_death_timer_timeout_signal_received()

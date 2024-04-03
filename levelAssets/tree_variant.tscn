@@ -1,20 +1,25 @@
-[gd_scene load_steps=18 format=3 uid="uid://da1fqkc47tiif"]
+[gd_scene load_steps=19 format=3 uid="uid://da1fqkc47tiif"]
 
 [ext_resource type="Script" path="res://scripts/tree.gd" id="1_584y3"]
 [ext_resource type="Texture2D" uid="uid://bv8ct5eu7p05c" path="res://levelAssets/animated/tree2a.png" id="1_goc47"]
 [ext_resource type="Script" path="res://levelAssets/HitBox.gd" id="3_w5wsi"]
+[ext_resource type="Texture2D" uid="uid://jji3bo3135fl" path="res://levelAssets/animated/leaf.png" id="4_a7001"]
 
-[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_xb2en"]
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_wo7nb"]
+particle_flag_rotate_y = true
 particle_flag_disable_z = true
 emission_shape = 1
 emission_sphere_radius = 20.0
+angle_min = -720.0
+angle_max = 720.0
 direction = Vector3(0, 0, 0)
 spread = 20.0
 initial_velocity_min = 50.0
 initial_velocity_max = 100.0
 gravity = Vector3(0, 98, 0)
-scale_max = 2.0
-color = Color(0.423529, 0.588235, 0.423529, 1)
+scale_min = 0.1
+scale_max = 0.2
+color = Color(0.968627, 0.768627, 0.329412, 1)
 turbulence_enabled = true
 turbulence_noise_strength = 0.5
 turbulence_noise_scale = 1.0
@@ -111,14 +116,25 @@ z_as_relative = false
 position = Vector2(0, -44)
 emitting = false
 amount = 25
-process_material = SubResource("ParticleProcessMaterial_xb2en")
-lifetime = 1.5
+process_material = SubResource("ParticleProcessMaterial_wo7nb")
+texture = ExtResource("4_a7001")
+lifetime = 1.8
 one_shot = true
 explosiveness = 0.5
 randomness = 0.2
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(1, -10)
+sprite_frames = SubResource("SpriteFrames_fiqj5")
+animation = &"idle"
+frame_progress = 0.170763
+offset = Vector2(0, -15)
+
+[node name="AnimatedSprite2DShadow" type="AnimatedSprite2D" parent="."]
+modulate = Color(0, 0, 0, 0.372549)
+position = Vector2(11, 28)
+scale = Vector2(1.1, -1.1)
+skew = -0.363028
 sprite_frames = SubResource("SpriteFrames_fiqj5")
 animation = &"idle"
 frame_progress = 0.170763
